@@ -1,3 +1,7 @@
+https://dev.to/lexlohr/deploy-a-solid-start-app-on-github-pages-2l2l
+
+
+
 # SolidStart
 
 Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
