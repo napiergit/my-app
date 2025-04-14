@@ -27,7 +27,7 @@ jobs:
           mkdir gh-pages
 
           # Move build files into gh-pages
-          cp -r dist/* gh-pages/
+          cp -r .output/public/* gh-pages/
 
           cd gh-pages
           git init
