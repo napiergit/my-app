@@ -3,7 +3,7 @@ name: Deploy SolidJS to GitHub Pages
 on:
   push:
     branches:
-      - main  # Trigger on push to main branch (adjust if your default branch is different)
+      - main  # Adjust if your default branch is different
 
 jobs:
   build:
@@ -18,27 +18,31 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'  # Use the appropriate Node.js version for your project
+        node-version: '16'
 
-    # Step 3: Install esbuild version 0.24.2 to resolve the version conflict
+    # Step 3: Install esbuild version 0.24.2 to resolve version conflicts
     - name: Install esbuild version 0.24.2
       run: npm install esbuild@0.24.2 --save-dev
 
-    # Step 4: Install dependencies
+    # Step 4: Install crypto-browserify to polyfill crypto.getRandomValues
+    - name: Install crypto-browserify
+      run: npm install crypto-browserify
+
+    # Step 5: Install dependencies
     - name: Install dependencies
-      run: npm install  # or `yarn install` if you use yarn
+      run: npm install
 
-    # Step 5: Build the project
+    # Step 6: Build the project
     - name: Build the project
-      run: npm run build  # or `yarn build`
+      run: npm run build
 
-    # Step 6: Deploy to GitHub Pages
+    # Step 7: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       run: |
         # Make sure we're in the build output folder
         mkdir gh-pages
         cp -r .output/public/* gh-pages/
-        
+
         # Go to gh-pages folder and set up git
         cd gh-pages
         git init
@@ -46,11 +50,11 @@ jobs:
         git checkout -b gh-pages  # Ensure we're on the correct branch
         git add .
         git commit -m "Deploy to GitHub Pages"
-        
+
         # Push changes to gh-pages branch
         git push -f origin gh-pages
 
-    # Step 7: Add .nojekyll to bypass Jekyll processing (optional, but recommended)
+    # Step 8: Add .nojekyll to bypass Jekyll processing (optional)
     - name: Add .nojekyll
       run: |
         touch gh-pages/.nojekyll
