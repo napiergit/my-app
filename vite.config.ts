@@ -1,11 +1,13 @@
-import { defineConfig } from "@solidjs/start/config";
+import { defineConfig } from 'vite';
+import solidPlugin from 'vite-plugin-solid';
 
+// SolidJS specific config
 export default defineConfig({
-  start: {
-    ssr: true,
-    server: {
-      baseURL: process.env.BASE_PATH,
-      preset: "static"
-    }
-  }
+  plugins: [solidPlugin()],
+  base: '/my-app/',  // Change this to your repo name (e.g., '/my-app/')
+  build: {
+    outDir: '.output/public',  // Ensure the build goes to this folder for GitHub Pages
+    ssr: false,
+  },
 });
+

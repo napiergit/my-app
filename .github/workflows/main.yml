@@ -1,38 +1,57 @@
-name: Deploy to GitHub Pages
+name: Deploy SolidJS to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Only run when main is updated
+      - main  # Trigger on push to main branch (adjust if your default branch is different)
 
 jobs:
-  deploy:
-    if: github.ref == 'refs/heads/main'  # Prevent recursive triggers
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    # Step 1: Check out the code
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install & Build
-        run: |
-          npm ci
-          npm run build
+    # Step 2: Set up Node.js (adjust the version if needed)
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'  # Use the appropriate Node.js version for your project
 
-      - name: Deploy with fine-grained token
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    # Step 3: Install dependencies
+    - name: Install dependencies
+      run: npm install  # or `yarn install` if you use yarn
 
-          # Create clean gh-pages folder
-          mkdir gh-pages
-          cp -r .output/public/* gh-pages/
+    # Step 4: Build the project
+    - name: Build the project
+      run: npm run build  # or `yarn build`
 
-          cd gh-pages
-          git init
-          git remote add origin https://x-access-token:${{ secrets.FG_TOKEN }}@github.com/${{ github.repository }}
-          git checkout -b gh-pages
-          git add .
-          git commit -m "Deploy from GitHub Actions"
-          git push -f origin gh-pages
+    # Step 5: Deploy to GitHub Pages
+    - name: Deploy to GitHub Pages
+      run: |
+        # Make sure we're in the build output folder
+        mkdir gh-pages
+        cp -r .output/public/* gh-pages/
+        
+        # Go to gh-pages folder and set up git
+        cd gh-pages
+        git init
+        git remote add origin https://x-access-token:${{ secrets.FG_TOKEN }}@github.com/napiergit/my-app.git
+        git checkout -b gh-pages  # Ensure we're on the correct branch
+        git add .
+        git commit -m "Deploy to GitHub Pages"
+        
+        # Push changes to gh-pages branch
+        git push -f origin gh-pages
+
+    # Step 6: Add .nojekyll to bypass Jekyll processing (optional, but recommended)
+    - name: Add .nojekyll
+      run: |
+        touch gh-pages/.nojekyll
+        cd gh-pages
+        git add .nojekyll
+        git commit -m "Add .nojekyll to bypass Jekyll processing"
+        git push origin gh-pages
 
