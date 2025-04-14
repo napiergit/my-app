@@ -3,10 +3,11 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # or your source branch
+      - main  # Only run when main is updated
 
 jobs:
   deploy:
+    if: github.ref == 'refs/heads/main'  # Prevent recursive triggers
     runs-on: ubuntu-latest
 
     steps:
@@ -18,15 +19,13 @@ jobs:
           npm ci
           npm run build
 
-      - name: Deploy with FG token
+      - name: Deploy with fine-grained token
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Create temp dir for gh-pages
+          # Create clean gh-pages folder
           mkdir gh-pages
-
-          # Move build files into gh-pages
           cp -r .output/public/* gh-pages/
 
           cd gh-pages
@@ -34,6 +33,6 @@ jobs:
           git remote add origin https://x-access-token:${{ secrets.FG_TOKEN }}@github.com/${{ github.repository }}
           git checkout -b gh-pages
           git add .
-          git commit -m "Initial GitHub Pages deploy"
+          git commit -m "Deploy from GitHub Actions"
           git push -f origin gh-pages
 
