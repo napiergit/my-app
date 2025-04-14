@@ -1,18 +1,21 @@
 import { defineConfig } from 'vite';
-import solidPlugin from 'vite-plugin-solid';
+import solid from 'vite-plugin-solid';
 
-// SolidJS specific config
 export default defineConfig({
+  plugins: [solid()], // Solid plugin
+  ssr: {
+    noExternal: ['crypto-browserify'], // Fix for crypto in SSR
+  },
   resolve: {
     alias: {
-      crypto: 'crypto-browserify',  // Polyfill crypto
+      crypto: 'crypto-browserify', // Polyfill crypto for SSR
     },
   },
-  plugins: [solidPlugin()],
-  base: '/my-app/',  // Change this to your repo name (e.g., '/my-app/')
+  optimizeDeps: {
+    include: ['crypto-browserify'], // Ensure crypto-browserify is included
+  },
   build: {
-    outDir: '.output/public',  // Ensure the build goes to this folder for GitHub Pages
-    ssr: false,
+    outDir: 'output/public',
   },
 });
 
