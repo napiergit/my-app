@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install
+        run: npm i --legacy-peer-deps
+
+      - name: build
+        run: npm run build
+        env:
+          BASE_PATH: /my-app/
+
+      - name: create .nojekyll
+        run: touch .output/public/.nojekyll
+
+      - name: Deploy using fine-grained PAT
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Setup worktree for gh-pages
+          git fetch origin gh-pages || git checkout --orphan gh-pages
+          git worktree add gh-pages gh-pages
+
+          # Copy output files
+          rm -rf gh-pages/*
+          cp -r .output/public/* gh-pages/
+
+          cd gh-pages
+          git add .
+          git commit -m "Deploy from GitHub Actions" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.FG_TOKEN }}@github.com/${{ github.repository }} HEAD:gh-pages
+
+      # - name: deploy pages
+      #   uses: JamesIves/github-pages-deploy-action@v4.5.0
+      #   with:
+      #     token: secrets.PAT
+      #     branch: gh-pages
+      #     folder: .output/public
+
+      # - name: Deploy to GitHub Pages
+      #   uses: peaceiris/actions-gh-pages@v3
+      #   with:
+      #     personal_token: ${{ secrets.PAT }}
+      #     publish_dir: .output/public
+      #     publish_branch: gh-pages
