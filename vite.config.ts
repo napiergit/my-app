@@ -16,6 +16,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'output/public',
+		rollupOptions: {
+      external: ['crypto'], // Exclude crypto from the final bundle
+    },
   },
 });
 
