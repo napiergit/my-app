@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Check out the code
+    # Step 1: Checkout repository
     - name: Checkout repository
       uses: actions/checkout@v3
 
@@ -20,15 +20,19 @@ jobs:
       with:
         node-version: '16'  # Use the appropriate Node.js version for your project
 
-    # Step 3: Install dependencies
+    # Step 3: Install esbuild version 0.24.2 to resolve the version conflict
+    - name: Install esbuild version 0.24.2
+      run: npm install esbuild@0.24.2 --save-dev
+
+    # Step 4: Install dependencies
     - name: Install dependencies
       run: npm install  # or `yarn install` if you use yarn
 
-    # Step 4: Build the project
+    # Step 5: Build the project
     - name: Build the project
       run: npm run build  # or `yarn build`
 
-    # Step 5: Deploy to GitHub Pages
+    # Step 6: Deploy to GitHub Pages
     - name: Deploy to GitHub Pages
       run: |
         # Make sure we're in the build output folder
@@ -46,7 +50,7 @@ jobs:
         # Push changes to gh-pages branch
         git push -f origin gh-pages
 
-    # Step 6: Add .nojekyll to bypass Jekyll processing (optional, but recommended)
+    # Step 7: Add .nojekyll to bypass Jekyll processing (optional, but recommended)
     - name: Add .nojekyll
       run: |
         touch gh-pages/.nojekyll
