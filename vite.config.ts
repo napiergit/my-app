@@ -1,24 +1,14 @@
-import { defineConfig } from 'vite';
-import solid from 'vite-plugin-solid';
+import { defineConfig } from "vite";
+import solid from "solid-start/vite";
 
 export default defineConfig({
-  plugins: [solid()], // Solid plugin
-  ssr: {
-    noExternal: ['crypto-browserify'], // Fix for crypto in SSR
-  },
-  resolve: {
-    alias: {
-      crypto: 'crypto-browserify', // Polyfill crypto for SSR
-    },
-  },
-  optimizeDeps: {
-    include: ['crypto-browserify'], // Ensure crypto-browserify is included
-  },
+  plugins: [
+    solid({
+      adapter: "solid-start-static",
+      ssr: true,
+    }),
+  ],
   build: {
-    outDir: 'output/public',
-		rollupOptions: {
-      external: ['crypto'], // Exclude crypto from the final bundle
-    },
+    outDir: ".output/public",
   },
 });
-
